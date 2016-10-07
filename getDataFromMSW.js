@@ -1,18 +1,19 @@
+'use strict';
+
 var http = require('http');
 var AWS = require('aws-sdk');
-
-var forecastData;
-var params;
-
-var docClient = new AWS.DynamoDB.DocumentClient();
-
-AWS.config.update({
-    region : 'ap-northeast-1'
-});
 
 exports.handler = (event, context, callback) => {
 
     // init variables
+
+    var docClient = new AWS.DynamoDB.DocumentClient();
+
+    AWS.config.update({
+        region : 'ap-northeast-1'
+    });
+    var forecastData;
+    var params;
     var baseURL = 'magicseaweed.com';
     var basePath = '/api';
     var baseKey = 'YOURTOKENHERE'; // your token here!
@@ -25,7 +26,7 @@ exports.handler = (event, context, callback) => {
 
     // init options array
     for (var i = 0; i < spot_ids.length; i++) {
-        completeOptions = baseOptions[0] + spot_ids[i];
+        var completeOptions = baseOptions[0] + spot_ids[i];
         option = {
             host: baseURL,
             port: 80,
@@ -36,12 +37,12 @@ exports.handler = (event, context, callback) => {
     }
 
     // describe functions
-    makeRequest = function(reqOptions) {
-        request = http.get(reqOptions[ctr], processResponse);
+    var makeRequest = function(reqOptions) {
+        var request = http.get(reqOptions[ctr], processResponse);
         request.on('error', logResponse);
     };
 
-    processResponse = function (res) {
+    var processResponse = function (res) {
         var body = '';
         console.log('OPTIONS: ' + JSON.stringify(options));
         console.log('STATUS: ' + res.statusCode);
@@ -67,7 +68,7 @@ exports.handler = (event, context, callback) => {
         });
     };
 
-    logResponse = function (err, data) {
+    var logResponse = function (err, data) {
         if (err) {
             console.log(err);
         } else {
@@ -76,7 +77,13 @@ exports.handler = (event, context, callback) => {
         }
     };
 
-    processData = function (obj) {
+    var processData = function (obj) {
+      var maxHeight = null;
+      var index = null;
+      var units = null;
+      var forecast = null;
+      var swellDate = null;
+
       for (var j = 0; j < obj.length; j++) {
         maxHeight = null;
         index = null;
@@ -100,7 +107,7 @@ exports.handler = (event, context, callback) => {
       }
     };
 
-    saveData = function (JSONobj) {
+    var saveData = function (JSONobj) {
         //set params
 
         params = {

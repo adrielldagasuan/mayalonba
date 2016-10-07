@@ -1,3 +1,5 @@
+"use strict";
+
 var http = require('https');
 var AWS = require('aws-sdk');
 var docClient = new AWS.DynamoDB.DocumentClient();
@@ -5,15 +7,13 @@ AWS.config.update({
     region : 'ap-northeast-1'
 });
 
-var APIToken = <<YOURTOKENHERE>>;
+var APIToken = '<<YOURTOKENHERE>>';
 var baseURL = 'api.telegram.org';
 
 // define variables
 var params = {};
-var commands = [];
 var postData = {};
 var mswData;
-var params;
 var messages = [];
 var options;
 var spots = {};
@@ -24,7 +24,7 @@ var processDone = false;
 // define functions
 
 // options for sending replies using the telegram API
-getOptions = function(method, postParams){
+var getOptions = function(method, postParams){
     return {
         host: baseURL,
         port: 443,
@@ -37,7 +37,7 @@ getOptions = function(method, postParams){
     };
 };
 
-sendGif = function(data){
+var sendGif = function(data){
   data.document = "https://media.giphy.com/media/RMfTVxILkMWUE/giphy.gif";
   options = getOptions('/sendDocument',data);
   sendReply(options);
@@ -45,13 +45,19 @@ sendGif = function(data){
 
 
 // process data from dynamoDB
-processData = function (err, data) {
+var processData = function (err, data) {
   if (err) {
       console.log(err);
   } else {
 
-      obj = JSON.parse(JSON.stringify(data));
-      text = '';
+      var obj = JSON.parse(JSON.stringify(data));
+      var text = '';
+      var maxHeight = null;
+      var index = null;
+      var units = null;
+      var forecast = null;
+      var swellDate = null;
+
       for (var j = 0; j < obj.Item.forecastData.length; j++) {
         maxHeight = null;
         index = null;
@@ -80,7 +86,7 @@ processData = function (err, data) {
 };
 
 //send replies using telegram API
-sendReply = function(options) {
+var sendReply = function(options) {
     var request = http.request(options, function (res) {
 
         res.setEncoding('utf8');
@@ -102,6 +108,9 @@ exports.handler = (event, context, callback) => {
 
     console.log('EVENT:' + JSON.stringify(event));
     console.log('CONTEXT:' + JSON.stringify(context));
+
+    var commands = [];
+    var isValid = false;
 
     // main
 
