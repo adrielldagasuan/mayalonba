@@ -8,4 +8,4 @@ getDataFromMSW - gets data from MSW API for 2 surf spots
 
 look for @mayalonbot in telegram
 
-Peace!
+Peace out!
